@@ -34,8 +34,6 @@ type
     private    
       _formatDatetime: TFormatSettings;
       _internalDatetime: TDateTime;
-      
-      function GetCustomFormatSettings: TFormatSettings;
     
     public
       property DateTimeFormat: TFormatSettings read _formatDatetime write _formatDatetime;
@@ -65,8 +63,10 @@ type
       function toDateTime(): TDateTime;
       function toString(const aFormatStr: String = ''): String; reintroduce;
       function toNumeric(): Int64;
-      
-      function StringToDateTime(str: String): TDateTime;
+
+      class function GetCustomFormatSettings: TFormatSettings; static;
+      class function StringToDateTime(str: String): TDateTime; static;
+      class function DateTimeToString(dt: TDateTime): String; static;
   end;
 
 implementation
@@ -203,12 +203,17 @@ function cDateTime.toNumeric(): Int64;
     result := DateTimeToUnix(_internalDatetime);
   end;  
   
-function cDateTime.StringToDateTime(str: String): TDateTime;
+class function cDateTime.StringToDateTime(str: String): TDateTime;
   begin
-    result := StrToDateTime(str, GetCustomFormatSettings);
-  end;    
+    result := StrToDateTime(str, GetCustomFormatSettings());
+  end;
+
+class function cDateTime.DateTimeToString(dt: TDateTime): String;
+  begin
+    result := DateTimeToStr(dt, GetCustomFormatSettings())
+  end;
   
-function cDateTime.GetCustomFormatSettings : TFormatSettings;
+class function cDateTime.GetCustomFormatSettings : TFormatSettings;
   var tmp : TFormatSettings;
   begin
     tmp := DefaultFormatSettings;
